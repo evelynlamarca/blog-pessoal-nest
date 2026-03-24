@@ -49,7 +49,7 @@ export class Postagem {
   @ManyToOne(() => Usuario, (usuario) => usuario.postagem, { onDelete: 'CASCADE' })
   @IsObject()
   @IsNotEmpty()
-  @Type(() => Tema)
+@Type(() => Usuario)
   @ApiProperty({ 
     type: Usuario,
     example: { id: 1 } // Apenas o id no exemplo do Swagger
