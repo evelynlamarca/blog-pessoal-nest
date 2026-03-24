@@ -1,0 +1,2 @@
+npm install --save bcrypt  @nestjs/passport passport passport-local  @nestjs/jwt passport-jwt class-validator@0.140.0 class-transformer typeorm @nestjs/typeorm mysql2 date-fns
+npm install --save-dev @types/bcrypt @types/passport-local @types/passport-jwt
