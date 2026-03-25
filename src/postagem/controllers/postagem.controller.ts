@@ -59,3 +59,4 @@ export class PostagemController {
     return this.postagemService.delete(id);
   }
 }
+// Comentário para forçar o Git a ver mudanças
