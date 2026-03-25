@@ -19,7 +19,7 @@ import { Postagem } from './postagem/entities/postagem.entity';
   username: 'root',
   password: 'root',
   database: 'db_blogpessoal',
-  entities: [Postagem],
+  entities: [__dirname + '/**/*.entity{.ts,.js}'],
   synchronize: true,
 }),
     PostagemModule,

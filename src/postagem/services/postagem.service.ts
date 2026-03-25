@@ -1,8 +1,7 @@
 import { Postagem } from './../entities/postagem.entity';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ILike, Repository } from 'typeorm';
-import { DeleteResult } from 'typeorm/browser';
+import { Like, Repository, DeleteResult } from 'typeorm'; 
 import { TemaService } from '../../tema/service/tema.service';
 import { UsuarioService } from '../../usuario/service/usuario.service';
 
@@ -43,7 +42,7 @@ export class PostagemService {
     .leftJoinAndSelect("postagem.tema", "tema")
     .leftJoin("postagem.usuario", "usuario")
     .addSelect(["usuario.id", "usuario.nome"])
-    .where("postagem.titulo ILIKE :titulo", { titulo: `%${titulo}%` })
+    .where("postagem.titulo LIKE :titulo", { titulo: `%${titulo}%` })
     .getMany();
   }
 
