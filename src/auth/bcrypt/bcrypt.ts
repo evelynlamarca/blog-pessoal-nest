@@ -3,14 +3,15 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class Bcrypt {
-    async criptografarSenha(senha: string): Promise<string> {
+    
+    // Este método substitui o 'criptografarSenha'
+    async hash(senha: string): Promise<string> {
         let saltos: number = 10;
         return await bcrypt.hash(senha, saltos);
     }
 
-    async compararSenhas(senhaDigitada: string, senhaBanco: string): Promise<boolean> {
+    // Este método substitui o 'compararSenhas' e resolve o erro do AuthService
+    async compare(senhaDigitada: string, senhaBanco: string): Promise<boolean> {
         return await bcrypt.compare(senhaDigitada, senhaBanco);
     }
-
-
 }

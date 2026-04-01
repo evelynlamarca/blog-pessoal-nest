@@ -1,67 +1,74 @@
+import { HttpException, HttpStatus, Injectable, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Usuario } from './../entities/usuario.entity';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
+import { Usuario } from '../entities/usuario.entity';
 import { Bcrypt } from '../../auth/bcrypt/bcrypt';
+import { AuthService } from '../../auth/services/auth.service';
 
 @Injectable()
 export class UsuarioService {
-  constructor(
-    @InjectRepository(Usuario) private usuarioRepository: Repository<Usuario>,
-    private bcrypt: Bcrypt,
-  ) {}
+    constructor(
+        @InjectRepository(Usuario)
+        private usuarioRepository: Repository<Usuario>,
+        private bcrypt: Bcrypt,
+        @Inject(forwardRef(() => AuthService)) // <--- ISSO AQUI DESTRAVA O ERRO DO TERMINAL
+        private authService: AuthService
+    ) { }
 
-  async findAll() {
-    return await this.usuarioRepository.find({relations:{postagem:true}});
-  }
+    async findByUsuario(usuario: string): Promise<Usuario | undefined> {
+        return await this.usuarioRepository.findOne({
+            where: {
+                usuario
+            }
+        });
+    }
 
-  async findByUsuario(usuario: string): Promise<Usuario | null> {
-    
-    return await this.usuarioRepository.findOne({
-      where: {usuario},
-    });
-  }
+    async findAll(): Promise<Usuario[]> {
+        return await this.usuarioRepository.find({
+            relations: {
+                postagem: true
+            }
+        });
+    }
 
-  async findById(id: number) {
-    const usuario = await this.usuarioRepository.findOne({
-      where: {
-        id,
-      },
-    });
+    async findById(id: number): Promise<Usuario> {
+        let usuario = await this.usuarioRepository.findOne({
+            where: {
+                id
+            },
+            relations: {
+                postagem: true
+            }
+        });
 
-    if (!usuario)
-      throw new HttpException('Usuario não encontrado!', HttpStatus.NOT_FOUND);
+        if (!usuario)
+            throw new HttpException('Usuário não encontrado!', HttpStatus.NOT_FOUND);
 
-    return usuario;
-  }
+        return usuario;
+    }
 
-  async create(usuario: Usuario) {
-    const buscaUsuario = await this.findByUsuario(usuario.usuario);
+    async create(usuario: Usuario): Promise<Usuario> {
+        let buscaUsuario = await this.findByUsuario(usuario.usuario);
 
-    if (buscaUsuario)
-      throw new HttpException('O Usuario já existe!', HttpStatus.BAD_REQUEST);
+        if (!buscaUsuario) {
+            usuario.senha = await this.bcrypt.hash(usuario.senha);
+            return await this.usuarioRepository.save(usuario);
+        }
 
-    const {id, ...usuarioSemId} = usuario;
-    usuarioSemId.senha = await this.bcrypt.criptografarSenha(usuario.senha);
-    return await this.usuarioRepository.save(usuarioSemId);
-  }
+        throw new HttpException("O Usuário já existe!", HttpStatus.BAD_REQUEST);
+    }
 
-  async update(usuario: Usuario) {
-    await this.findById(usuario.id);
+    async update(usuario: Usuario): Promise<Usuario> {
+        let updateUsuario: Usuario = await this.findById(usuario.id);
+        let buscaUsuario = await this.findByUsuario(usuario.usuario);
 
-    const buscaUsuario = await this.findByUsuario(usuario.usuario);
+        if (!updateUsuario)
+            throw new HttpException('Usuário não encontrado!', HttpStatus.NOT_FOUND);
 
-    if (buscaUsuario && buscaUsuario.id !== usuario.id)
-      throw new HttpException(
-        'Usuário (e-mail) já Cadastrado!',
-        HttpStatus.BAD_REQUEST,
-      );
+        if (buscaUsuario && buscaUsuario.id !== usuario.id)
+            throw new HttpException('Usuário (e-mail) já cadastrado!', HttpStatus.BAD_REQUEST);
 
-    usuario.senha = await this.bcrypt.criptografarSenha(usuario.senha);
-    return await this.usuarioRepository.save(usuario);
-  }
-
-  // remove(id: number) {
-  //   return `This action removes a #${id} usuario`;
-  // }
+        usuario.senha = await this.bcrypt.hash(usuario.senha);
+        return await this.usuarioRepository.save(usuario);
+    }
 }

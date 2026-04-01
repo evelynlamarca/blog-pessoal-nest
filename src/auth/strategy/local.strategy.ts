@@ -5,19 +5,17 @@ import { AuthService } from '../services/auth.service';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
-  private _usernameField: string;
-  private _passwordField: string;
-
-  constructor(private readonly authService: AuthService) {
-    super();
-    this._usernameField = 'usuario';
-    this._passwordField = 'senha';
+  constructor(private authService: AuthService) {
+    super({
+      usernameField: 'usuario', // Diz ao Nest para ler o campo 'usuario' do Insomnia
+      passwordField: 'senha',   // Diz ao Nest para ler o campo 'senha' do Insomnia
+    });
   }
 
   async validate(usuario: string, senha: string): Promise<any> {
     const validaUsuario = await this.authService.validateUser(usuario, senha);
     if (!validaUsuario) {
-      throw new UnauthorizedException('Usuário e/ou senha incorreto(s)');
+      throw new UnauthorizedException('Usuário ou senha inválidos');
     }
     return validaUsuario;
   }

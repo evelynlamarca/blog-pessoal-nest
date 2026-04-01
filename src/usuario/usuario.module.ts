@@ -4,11 +4,15 @@ import { UsuarioController } from './controller/usuario.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Usuario } from './entities/usuario.entity';
 import { AuthModule } from '../auth/auth.module';
+import { Bcrypt } from '../auth/bcrypt/bcrypt';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Usuario]), forwardRef(() => AuthModule)],
+  imports: [
+    TypeOrmModule.forFeature([Usuario]), 
+    forwardRef(() => AuthModule)
+  ],
   controllers: [UsuarioController],
-  providers: [UsuarioService],
-  exports:[UsuarioService]
+  providers: [UsuarioService, Bcrypt],
+  exports: [UsuarioService]
 })
 export class UsuarioModule {}

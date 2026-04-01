@@ -7,7 +7,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
-import { UsuarioLogin } from '../entities/usuariologin';
+import { UsuarioLogin } from '../entities/usuariologin.entity';
 import { LocalAuthGuard } from '../guard/local-auth.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
