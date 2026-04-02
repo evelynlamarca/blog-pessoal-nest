@@ -1,6 +1,5 @@
 {
   "name": "generation-js13-blogpessoal-main",
-
   "version": "1.0.0",
   "scripts": {
     "start": "nest start",
