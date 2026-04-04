@@ -8,8 +8,7 @@ import { PostagemModule } from './postagem/postagem.module';
 import { TemaModule } from './tema/tema.module';
 import { UsuarioModule } from './usuario/usuario.module';
 import { AuthModule } from './auth/auth.module';
-import { ProdService } from './data/services/prod.service'; // 
-
+import { ProdService } from './auth/data/services/prod.service';
 @Module({
   imports: [
     ConfigModule.forRoot(),
